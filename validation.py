@@ -76,7 +76,7 @@ def _errors_list(exc) -> list:
 # ── Mixins (shared validator logic via inheritance) ────────────────────────
 
 class NameEmailMixin(BaseModel):
-    @field_validator("full_name")
+    @field_validator("full_name", check_fields=False)
     @classmethod
     def name_chars(cls, v):
         v = _clean(v)
@@ -84,7 +84,7 @@ class NameEmailMixin(BaseModel):
             raise ValueError("Full name can only contain letters, spaces, dots, hyphens and apostrophes")
         return v
 
-    @field_validator("email")
+    @field_validator("email", check_fields=False)
     @classmethod
     def lower_email(cls, v):
         return _clean(str(v)).lower()
@@ -196,7 +196,7 @@ class _CustomerCreateBase(NameEmailMixin, DobMixin):
     def validate_pan(cls, v):
         return _validate_pan_str(v)
 
-    @field_validator("nominees", mode="before")
+    @field_validator("nominees", mode="before", check_fields=False)
     @classmethod
     def limit_nominees(cls, v):
         return (v or [])[:3]
