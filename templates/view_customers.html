@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Customers - Zylitix Bank{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/view_customers.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="table-page">
+    <div class="table-container">
+
+        {% if success %}
+        <div class="flash-success">✅ {{ success }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="flash-error">❌ {{ error }}</div>
+        {% endif %}
+
+        <div class="table-header">
+            <div class="table-header-left">
+                <h1>All Customers</h1>
+                <p>Manage and view all registered customers</p>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="liveSearch" class="search-input"
+                   placeholder="Search by name, phone, email, account number..."
+                   oninput="liveSearchTable(this.value)">
+            <span class="search-count" id="searchCount">{{ customers.total }} customers</span>
+        </div>
+
+        <div class="table-wrapper">
+            {% if customers.items %}
+            <table class="data-table" id="customersTable">
+                <thead>
+                    <tr>
+                        <th class="sr-col">Sr. No</th>
+                        <th>Customer Name</th>
+                        <th>Account Number</th>
+                        <th>Account Type</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for customer in customers.items %}
+                    <tr class="customer-row"
+                        data-name="{{ customer.full_name | lower }}"
+                        data-phone="{{ customer.phone_number }}"
+                        data-email="{{ customer.email | lower }}"
+                        data-account="{{ customer.account_number | lower }}">
+                        <td class="sr-col sr-no">
+                            {{ ((customers.page - 1) * customers.per_page) + loop.index }}
+                        </td>
+                        <td>{{ customer.full_name }}</td>
+                        <td>{{ customer.account_number }}</td>
+                        <td>
+                            {% if customer.account_type == 'Savings' %}
+                            <span class="badge badge-savings">Savings</span>
+                            {% elif customer.account_type == 'Current' %}
+                            <span class="badge badge-current">Current</span>
+                            {% elif customer.account_type == 'Business' %}
+                            <span class="badge badge-business">Business</span>
+                            {% else %}
+                            <span class="badge badge-fd">Fixed Deposit</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.phone_number }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ url_for('customer_detail', customer_id=customer.customer_id) }}"
+                                   class="btn btn-primary btn-action">View</a>
+                                <a href="{{ url_for('edit_customer', customer_id=customer.customer_id) }}"
+                                   class="btn-edit">Edit</a>
+                                <button class="btn-delete"
+                                        data-customer-id="{{ customer.customer_id }}"
+                                        data-name="{{ customer.full_name }}"
+                                        data-account="{{ customer.account_number }}">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div id="noResults" style="display:none; text-align:center; padding:40px; color:var(--gray); font-size:16px;">
+                😕 No customers found matching your search.
+            </div>
+
+            <div class="pagination-wrapper" id="paginationWrapper">
+                <div class="pagination-info">
+                    Showing {{ ((customers.page - 1) * customers.per_page) + 1 }}
+                    to {{ [customers.page * customers.per_page, customers.total] | min }}
+                    of {{ customers.total }} customers
+                </div>
+                <div class="pagination">
+                    <a href="{{ url_for('view_customers', page=customers.prev_num) }}"
+                       class="page-btn {% if not customers.has_prev %}disabled{% endif %}">← Prev</a>
+
+                    {% for page_num in customers.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            <a href="{{ url_for('view_customers', page=page_num) }}"
+                               class="page-btn {% if page_num == customers.page %}active{% endif %}">
+                                {{ page_num }}
+                            </a>
+                        {% else %}
+                            <span class="page-btn disabled">...</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    <a href="{{ url_for('view_customers', page=customers.next_num) }}"
+                       class="page-btn {% if not customers.has_next %}disabled{% endif %}">Next →</a>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📄</div>
+                <h3 class="empty-title">No Customers Found</h3>
+                <p class="empty-description">Start by adding your first customer</p>
+                <a href="{{ url_for('add_customer') }}" class="btn btn-primary">Add Customer</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/view_customers.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Zylitix Bank{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/manage_users.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div id="flashData"
+     data-success="{{ success or '' }}"
+     data-error="{{ error or '' }}"
+     style="display:none;"></div>
+
+<div class="table-page">
+    <div class="table-container">
+
+        <div class="table-header">
+            <div class="table-header-left">
+                <h1>Manage Staff Users</h1>
+                <p>View and manage all bank staff accounts</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">➕ Add New User</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Dashboard</a>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            {% if users %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:center;">Sr. No</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Created On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td style="text-align:center; font-weight:700; color:var(--primary);">{{ loop.index }}</td>
+                        <td><strong>{{ user.full_name }}</strong></td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.role == 'admin' %}
+                            <span class="role-badge role-admin">👑 Admin</span>
+                            {% else %}
+                            <span class="role-badge role-user">👤 Staff</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.created_at.strftime('%d %b %Y') }}</td>
+                        <td>
+                            {% if user.email == "admin@zylitix.com" %}
+                            <button class="btn-delete-user" disabled title="Cannot delete main admin">🔒 Protected</button>
+                            {% else %}
+                            <button class="btn-delete-user"
+                                onclick="showDeleteModal('{{ user.id }}', '{{ user.full_name }}', '{{ user.email }}')">
+                                🗑️ Delete
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <h3 class="empty-title">No Users Found</h3>
+                <p class="empty-description">Add your first staff user</p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Add User</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="stats-summary">
+            <div class="stats-pill stats-pill-admin">
+                👑 <strong>Admin users:</strong> {{ users | selectattr('role','eq','admin') | list | length }}
+            </div>
+            <div class="stats-pill stats-pill-staff">
+                👤 <strong>Staff users:</strong> {{ users | selectattr('role','eq','user') | list | length }}
+            </div>
+            <div class="stats-pill stats-pill-total">
+                📊 <strong>Total:</strong> {{ users | length }}
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="toast-wrapper" id="toastWrapper"></div>
+
+<script src="{{ url_for('static', filename='js/manage_users.js') }}"></script>
+{% endblock %}

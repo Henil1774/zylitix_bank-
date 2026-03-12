@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Customer - Zylitix Bank{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+
+        <!-- Header -->
+        <div class="form-header">
+            <div class="form-header-top">
+                <a href="{{ url_for('view_customers') }}" class="btn btn-secondary">← Back to Customers</a>
+            </div>
+            <h1 class="form-title-main">Edit Customer</h1>
+            <p class="form-subtitle-main">Update details for {{ customer.full_name }} — {{ customer.account_number }}</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <!-- Personal Information -->
+            <div class="form-section">
+                <h2 class="section-title">Personal Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name <span class="required">*</span></label>
+                        <input type="text" name="full_name" class="form-control"
+                               value="{{ customer.full_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select name="gender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option value="Male"   {% if customer.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if customer.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other"  {% if customer.gender == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ customer.email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number <span class="required">*</span></label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ customer.phone_number }}" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Account Type <span class="required">*</span></label>
+                        <select name="account_type" class="form-control">
+                            <option value="Savings"       {% if customer.account_type == 'Savings' %}selected{% endif %}>Savings</option>
+                            <option value="Current"       {% if customer.account_type == 'Current' %}selected{% endif %}>Current</option>
+                            <option value="Business"      {% if customer.account_type == 'Business' %}selected{% endif %}>Business</option>
+                            <option value="Fixed Deposit" {% if customer.account_type == 'Fixed Deposit' %}selected{% endif %}>Fixed Deposit</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-section">
+                <h2 class="section-title">Address Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Flat / House No</label>
+                        <input type="text" name="flat_no" class="form-control"
+                               value="{{ customer.address.flat_no if customer.address else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Block Number</label>
+                        <input type="text" name="block_number" class="form-control"
+                               value="{{ customer.address.block_number if customer.address else '' }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Society Name</label>
+                        <input type="text" name="society_name" class="form-control"
+                               value="{{ customer.address.society_name if customer.address else '' }}"
+                               placeholder="Enter society or apartment name">
+                    </div>
+                    <div class="form-group">
+                        <label>Street</label>
+                        <input type="text" name="street" class="form-control"
+                               value="{{ customer.address.street if customer.address else '' }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" name="city" class="form-control"
+                               value="{{ customer.address.city if customer.address else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" name="state" class="form-control"
+                               value="{{ customer.address.state if customer.address else '' }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <input type="text" name="pincode" class="form-control"
+                               value="{{ customer.address.pincode if customer.address else '' }}" maxlength="6">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent Details -->
+            <div class="form-section">
+                <h2 class="section-title">Parent Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Father's Name</label>
+                        <input type="text" name="father_name" class="form-control"
+                               value="{{ customer.parent_details.father_name if customer.parent_details else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Father's Occupation</label>
+                        <input type="text" name="father_occupation" class="form-control"
+                               value="{{ customer.parent_details.father_occupation if customer.parent_details else '' }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Mother's Name</label>
+                        <input type="text" name="mother_name" class="form-control"
+                               value="{{ customer.parent_details.mother_name if customer.parent_details else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Mother's Type</label>
+                        <select name="mother_type" class="form-control">
+                            <option value="">Select Type</option>
+                            <option value="Housewife" {% if customer.parent_details and customer.parent_details.mother_type == 'Housewife' %}selected{% endif %}>Housewife</option>
+                            <option value="Working"   {% if customer.parent_details and customer.parent_details.mother_type == 'Working' %}selected{% endif %}>Working</option>
+                            <option value="Retired"   {% if customer.parent_details and customer.parent_details.mother_type == 'Retired' %}selected{% endif %}>Retired</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KYC -->
+            <div class="form-section">
+                <h2 class="section-title">KYC Status</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Document Verified</label>
+                        <select name="document_verified" class="form-control">
+                            <option value="0" {% if customer.kyc and not customer.kyc.document_verified %}selected{% endif %}>Pending</option>
+                            <option value="1" {% if customer.kyc and customer.kyc.document_verified %}selected{% endif %}>Verified</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Risk Category</label>
+                        <select name="risk_category" class="form-control">
+                            <option value="Low"    {% if customer.kyc and customer.kyc.risk_category == 'Low' %}selected{% endif %}>Low</option>
+                            <option value="Medium" {% if customer.kyc and customer.kyc.risk_category == 'Medium' %}selected{% endif %}>Medium</option>
+                            <option value="High"   {% if customer.kyc and customer.kyc.risk_category == 'High' %}selected{% endif %}>High</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="submit-section">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{{ url_for('customer_detail', customer_id=customer.customer_id) }}"
+                   class="btn btn-secondary" style="margin-left: 10px;">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+/* ── Dashboard Role Badges ───────────────── */
+.role-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 8px;
+}
+
+.role-admin { background: rgba(239, 68, 68, 0.15);  color: #dc2626; }
+.role-user  { background: rgba(37, 99, 235, 0.15);  color: #2563eb; }
+
+.staff-info-box {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f0f4ff;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+    text-align: center;
+}
+
+.staff-info-box p {
+    font-size: 15px;
+    color: var(--gray);
+    margin: 0;
+}

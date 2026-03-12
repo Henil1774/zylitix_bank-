@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Zylitix Bank{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+.role-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 8px;
+}
+.role-admin { background: rgba(239,68,68,0.15); color: #dc2626; }
+.role-user  { background: rgba(37,99,235,0.15); color: #2563eb; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="container">
+
+        <nav class="navbar">
+            <div class="navbar-brand">🏦 Zylitix Bank</div>
+            <div class="navbar-user">
+                <span class="user-name">
+                    {{ user_name }}
+                    {% if role == 'admin' %}
+                    <span class="role-badge role-admin">Admin</span>
+                    {% else %}
+                    <span class="role-badge role-user">Staff</span>
+                    {% endif %}
+                </span>
+                <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+            </div>
+        </nav>
+
+        {% if success %}
+        <div style="background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#059669;padding:14px 20px;border-radius:8px;margin-bottom:20px;font-weight:600;">
+            ✅ {{ success }}
+        </div>
+        {% endif %}
+        {% if error %}
+        <div style="background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#dc2626;padding:14px 20px;border-radius:8px;margin-bottom:20px;font-weight:600;">
+            ❌ {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="welcome-section">
+            <h1 class="welcome-title">
+                {% if role == 'admin' %}
+                👑 Welcome, {{ user_name }}!
+                {% else %}
+                👋 Welcome, {{ user_name }}!
+                {% endif %}
+            </h1>
+            <p class="welcome-subtitle">
+                {% if role == 'admin' %}
+                You have full access — manage customers and staff users.
+                {% else %}
+                You can add new bank customers from here.
+                {% endif %}
+            </p>
+        </div>
+
+        {% if role == 'admin' %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value">{{ total_customers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Savings Accounts</div>
+                <div class="stat-value">{{ savings_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Current Accounts</div>
+                <div class="stat-value">{{ current_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Business Accounts</div>
+                <div class="stat-value">{{ business_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Fixed Deposits</div>
+                <div class="stat-value">{{ fd_count }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="actions-grid">
+
+            <a href="{{ url_for('add_customer') }}" class="action-card">
+                <h3 class="action-title">Add New Customer</h3>
+                <p class="action-description">Open a new bank account with complete customer details and KYC information</p>
+            </a>
+
+            {% if role == 'admin' %}
+            <a href="{{ url_for('view_customers') }}" class="action-card">
+                <h3 class="action-title">View All Customers</h3>
+                <p class="action-description">Browse, edit and manage all registered customers in the system</p>
+            </a>
+
+            <a href="{{ url_for('manage_users') }}" class="action-card" style="border-color: #ef4444;">
+                <h3 class="action-title">Manage Staff Users</h3>
+                <p class="action-description">Add new staff users and manage existing accounts</p>
+            </a>
+            {% endif %}
+
+        </div>
+
+        {% if role != 'admin' %}
+        <div style="margin-top: 30px; padding: 20px; background: #f0f4ff; border-radius: 12px; border-left: 4px solid var(--primary); text-align: center;">
+            <p style="font-size: 15px; color: var(--gray); margin: 0;">
+                🔒 You have <strong>staff access</strong>. You can add customers only.<br>
+                Contact admin for viewing or editing customer records.
+            </p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Details - Zylitix Bank{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customer_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+
+        <!-- Header -->
+        <div class="form-header">
+            <div class="form-header-top">
+                <a href="{{ url_for('view_customers') }}" class="btn btn-secondary">← Back to Customers</a>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% if success %}
+        <div class="flash-success">✅ {{ success }}</div>
+        {% endif %}
+
+        <!-- Account Header -->
+        <div class="account-header">
+            <div class="account-header-left">
+                <div class="account-number">{{ customer.account_number }}</div>
+                <div class="account-name">{{ customer.full_name }}</div>
+            </div>
+            <a href="{{ url_for('edit_customer', customer_id=customer.customer_id) }}"
+               class="btn-edit-header">✏️ Edit Customer</a>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="form-section">
+            <h2 class="section-title">Personal Information</h2>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-value">{{ customer.full_name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Date of Birth</div>
+                    <div class="detail-value">
+                        {% if customer.dob %}
+                            {{ customer.dob.strftime('%d %B %Y') }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Age</div>
+                    <div class="detail-value">
+                        {% if customer.age is not none %}
+                            {{ customer.age }} years
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Gender</div>
+                    <div class="detail-value">{{ customer.gender or 'Not Specified' }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">{{ customer.email }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Phone Number</div>
+                    <div class="detail-value">{{ customer.phone_number }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Account Type</div>
+                    <div class="detail-value">{{ customer.account_type }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KYC Information -->
+        <div class="form-section">
+            <h2 class="section-title">KYC Information</h2>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Aadhaar Number</div>
+                    <div class="detail-value">{{ customer.aadhaar_number }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">PAN Number</div>
+                    <div class="detail-value">{{ customer.pan_number }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">IFSC Code</div>
+                    <div class="detail-value">{{ customer.ifsc_code }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">KYC Status</div>
+                    <div class="detail-value">
+                        {% if customer.kyc and customer.kyc.document_verified %}
+                        <span class="status-badge status-active">Verified</span>
+                        {% else %}
+                        <span class="status-badge status-pending">Pending</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Risk Category</div>
+                    <div class="detail-value">{{ customer.kyc.risk_category if customer.kyc else 'N/A' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Details -->
+        {% if customer.address %}
+        <div class="form-section">
+            <h2 class="section-title">Address Details</h2>
+            <div class="detail-grid">
+                {% if customer.address.flat_no %}
+                <div class="detail-item">
+                    <div class="detail-label">Flat / House No</div>
+                    <div class="detail-value">{{ customer.address.flat_no }}</div>
+                </div>
+                {% endif %}
+                {% if customer.address.block_number %}
+                <div class="detail-item">
+                    <div class="detail-label">Block Number</div>
+                    <div class="detail-value">{{ customer.address.block_number }}</div>
+                </div>
+                {% endif %}
+                {% if customer.address.society_name %}
+                <div class="detail-item">
+                    <div class="detail-label">Society Name</div>
+                    <div class="detail-value">{{ customer.address.society_name }}</div>
+                </div>
+                {% endif %}
+                {% if customer.address.street %}
+                <div class="detail-item">
+                    <div class="detail-label">Street</div>
+                    <div class="detail-value">{{ customer.address.street }}</div>
+                </div>
+                {% endif %}
+                {% if customer.address.city %}
+                <div class="detail-item">
+                    <div class="detail-label">City</div>
+                    <div class="detail-value">{{ customer.address.city }}</div>
+                </div>
+                {% endif %}
+                {% if customer.address.state %}
+                <div class="detail-item">
+                    <div class="detail-label">State</div>
+                    <div class="detail-value">{{ customer.address.state }}</div>
+                </div>
+                {% endif %}
+                {% if customer.address.pincode %}
+                <div class="detail-item">
+                    <div class="detail-label">Pin Code</div>
+                    <div class="detail-value">{{ customer.address.pincode }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Parent Details -->
+        {% if customer.parent_details %}
+        <div class="form-section">
+            <h2 class="section-title">Parent Details</h2>
+            <div class="detail-grid">
+                {% if customer.parent_details.father_name %}
+                <div class="detail-item">
+                    <div class="detail-label">Father's Name</div>
+                    <div class="detail-value">{{ customer.parent_details.father_name }}</div>
+                </div>
+                {% endif %}
+                {% if customer.parent_details.father_occupation %}
+                <div class="detail-item">
+                    <div class="detail-label">Father's Occupation</div>
+                    <div class="detail-value">{{ customer.parent_details.father_occupation }}</div>
+                </div>
+                {% endif %}
+                {% if customer.parent_details.mother_name %}
+                <div class="detail-item">
+                    <div class="detail-label">Mother's Name</div>
+                    <div class="detail-value">{{ customer.parent_details.mother_name }}</div>
+                </div>
+                {% endif %}
+                {% if customer.parent_details.mother_type %}
+                <div class="detail-item">
+                    <div class="detail-label">Mother's Type</div>
+                    <div class="detail-value">{{ customer.parent_details.mother_type }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Nominees -->
+        {% if customer.nominees %}
+        <div class="form-section">
+            <h2 class="section-title">Nominee Details ({{ customer.nominees|length }})</h2>
+            {% for nominee in customer.nominees %}
+            <div class="nominee-block">
+                <h3>Nominee {{ loop.index }}</h3>
+                <div class="detail-grid">
+                    <div class="detail-item detail-item-success">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">{{ nominee.nominee_name }}</div>
+                    </div>
+                    <div class="detail-item detail-item-success">
+                        <div class="detail-label">Relation</div>
+                        <div class="detail-value">{{ nominee.relation }}</div>
+                    </div>
+                    {% if nominee.phone_number %}
+                    <div class="detail-item detail-item-success">
+                        <div class="detail-label">Phone</div>
+                        <div class="detail-value">{{ nominee.phone_number }}</div>
+                    </div>
+                    {% endif %}
+                    {% if nominee.email %}
+                    <div class="detail-item detail-item-success">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">{{ nominee.email }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Account Created -->
+        <div class="form-section">
+            <div class="detail-item">
+                <div class="detail-label">Account Created On</div>
+                <div class="detail-value">{{ customer.created_at.strftime('%d %B %Y, %I:%M %p') }}</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

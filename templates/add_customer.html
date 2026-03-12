@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+
+{% block title %}Add Customer - Zylitix Bank{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_customer.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+
+        <div class="form-header">
+            <div class="form-header-top">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+            </div>
+            <h1 class="form-title-main">New Customer Registration</h1>
+            <p class="form-subtitle-main">Fill in the details to open a new bank account</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" id="customerForm">
+
+            <div class="form-section">
+                <h2 class="section-title">Personal Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name <span class="required">*</span></label>
+                        <input type="text" name="full_name" class="form-control" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth <span class="required">*</span></label>
+                        <div class="date-input-wrapper">
+                            <input type="text" id="dobDisplay" class="form-control" placeholder="DD/MM/YYYY" maxlength="10">
+                            <input type="hidden" id="dobHidden" name="dob">
+                            <div class="date-help-text">Format: DD/MM/YYYY · Must be 18+ years old</div>
+                            <div class="date-error" id="dobError">Invalid date or must be at least 18 years old</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select name="gender" class="form-control">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" name="email" class="form-control" placeholder="example@email.com" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number <span class="required">*</span></label>
+                        <input type="text" name="phone" class="form-control" placeholder="10 digit phone number" maxlength="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Type <span class="required">*</span></label>
+                        <select name="account_type" class="form-control" required>
+                            <option value="">Select Account Type</option>
+                            <option value="Savings">Savings Account</option>
+                            <option value="Current">Current Account</option>
+                            <option value="Business">Business Account</option>
+                            <option value="Fixed Deposit">Fixed Deposit</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">KYC Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Aadhaar Number <span class="required">*</span></label>
+                        <input type="text" name="aadhaar" class="form-control" placeholder="12 digit Aadhaar number" maxlength="12" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PAN Number <span class="required">*</span></label>
+                        <input type="text" name="pan" class="form-control" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase;" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Address Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Flat No / House No</label>
+                        <input type="text" name="flat_no" class="form-control" placeholder="Enter flat/house number">
+                    </div>
+                    <div class="form-group">
+                        <label>Block Number</label>
+                        <input type="text" name="block_number" class="form-control" placeholder="Enter block number">
+                    </div>
+                </div>
+                <div class="form-row-single">
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <input type="text" name="street" class="form-control" placeholder="Enter street name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" name="city" id="cityInput" class="form-control"
+                               placeholder="Type city name" list="cityList" autocomplete="off">
+                        <datalist id="cityList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" name="state" id="stateInput" class="form-control"
+                               placeholder="Auto-filled from city">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Pin Code</label>
+                        <input type="text" name="pincode" class="form-control" placeholder="6 digit pin code" maxlength="6">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Parent Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Father's Name</label>
+                        <input type="text" name="father_name" class="form-control" placeholder="Enter father's name">
+                    </div>
+                    <div class="form-group">
+                        <label>Father's Occupation</label>
+                        <input type="text" name="father_occupation" class="form-control" placeholder="Enter occupation">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Mother's Name</label>
+                        <input type="text" name="mother_name" class="form-control" placeholder="Enter mother's name">
+                    </div>
+                    <div class="form-group">
+                        <label>Mother's Occupation Type</label>
+                        <select name="mother_type" class="form-control">
+                            <option value="">Select Type</option>
+                            <option value="Housewife">Housewife</option>
+                            <option value="Working">Working</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">Nominee Details</h2>
+                <div class="form-group">
+                    <label>Do you want to add nominees?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="add_nominees" id="nomineeYes" value="yes">
+                            <label for="nomineeYes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="add_nominees" id="nomineeNo" value="no" checked>
+                            <label for="nomineeNo">No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="nominees-section" id="nomineesSection">
+                    <div class="form-group">
+                        <label>How many nominees? (Maximum 3)</label>
+                        <div class="nominee-count-selector">
+                            <button type="button" class="nominee-count-btn active" data-count="1">1 Nominee</button>
+                            <button type="button" class="nominee-count-btn" data-count="2">2 Nominees</button>
+                            <button type="button" class="nominee-count-btn" data-count="3">3 Nominees</button>
+                        </div>
+                    </div>
+                    <div id="nomineeFormsContainer"></div>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="btn btn-primary">✅ Create Account</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+const cityStateData = {
+    'Mumbai':'Maharashtra','Delhi':'Delhi','Bangalore':'Karnataka','Bengaluru':'Karnataka',
+    'Hyderabad':'Telangana','Ahmedabad':'Gujarat','Chennai':'Tamil Nadu','Kolkata':'West Bengal',
+    'Pune':'Maharashtra','Jaipur':'Rajasthan','Surat':'Gujarat','Lucknow':'Uttar Pradesh',
+    'Kanpur':'Uttar Pradesh','Nagpur':'Maharashtra','Indore':'Madhya Pradesh','Thane':'Maharashtra',
+    'Bhopal':'Madhya Pradesh','Visakhapatnam':'Andhra Pradesh','Patna':'Bihar','Vadodara':'Gujarat',
+    'Ghaziabad':'Uttar Pradesh','Ludhiana':'Punjab','Agra':'Uttar Pradesh','Nashik':'Maharashtra',
+    'Faridabad':'Haryana','Meerut':'Uttar Pradesh','Rajkot':'Gujarat','Varanasi':'Uttar Pradesh',
+    'Srinagar':'Jammu and Kashmir','Aurangabad':'Maharashtra','Dhanbad':'Jharkhand',
+    'Amritsar':'Punjab','Navi Mumbai':'Maharashtra','Prayagraj':'Uttar Pradesh','Ranchi':'Jharkhand',
+    'Howrah':'West Bengal','Coimbatore':'Tamil Nadu','Jabalpur':'Madhya Pradesh','Gwalior':'Madhya Pradesh',
+    'Vijayawada':'Andhra Pradesh','Jodhpur':'Rajasthan','Madurai':'Tamil Nadu','Raipur':'Chhattisgarh',
+    'Kota':'Rajasthan','Chandigarh':'Chandigarh','Guwahati':'Assam','Solapur':'Maharashtra',
+    'Mysore':'Karnataka','Mysuru':'Karnataka','Bareilly':'Uttar Pradesh','Aligarh':'Uttar Pradesh',
+    'Tiruppur':'Tamil Nadu','Moradabad':'Uttar Pradesh','Jalandhar':'Punjab','Bhubaneswar':'Odisha',
+    'Salem':'Tamil Nadu','Warangal':'Telangana','Guntur':'Andhra Pradesh','Noida':'Uttar Pradesh',
+    'Jamshedpur':'Jharkhand','Kochi':'Kerala','Nellore':'Andhra Pradesh','Bhavnagar':'Gujarat',
+    'Dehradun':'Uttarakhand','Durgapur':'West Bengal','Asansol':'West Bengal','Kolhapur':'Maharashtra',
+    'Ajmer':'Rajasthan','Jamnagar':'Gujarat','Ujjain':'Madhya Pradesh','Siliguri':'West Bengal',
+    'Jhansi':'Uttar Pradesh','Jammu':'Jammu and Kashmir','Mangalore':'Karnataka','Erode':'Tamil Nadu',
+    'Belgaum':'Karnataka','Tirunelveli':'Tamil Nadu','Gaya':'Bihar','Jalgaon':'Maharashtra',
+    'Udaipur':'Rajasthan','Thiruvananthapuram':'Kerala','Gorakhpur':'Uttar Pradesh','Bikaner':'Rajasthan',
+    'Amravati':'Maharashtra','Cuttack':'Odisha','Nanded':'Maharashtra','Akola':'Maharashtra',
+    'Gulbarga':'Karnataka','Loni':'Uttar Pradesh','Malegaon':'Maharashtra','Bhilai':'Chhattisgarh'
+};
+const cityListEl = document.getElementById('cityList');
+Object.keys(cityStateData).sort().forEach(city => {
+    const opt = document.createElement('option');
+    opt.value = city;
+    cityListEl.appendChild(opt);
+});
+
+function fillState(cityVal, stateField) {
+    const city = cityVal.trim();
+    const key  = Object.keys(cityStateData).find(k => k.toLowerCase() === city.toLowerCase());
+    stateField.value = key ? cityStateData[key] : '';
+}
+
+const cityInput  = document.getElementById('cityInput');
+const stateInput = document.getElementById('stateInput');
+
+['input', 'change', 'blur'].forEach(evt => {
+    cityInput.addEventListener(evt, function() { fillState(this.value, stateInput); });
+});
+
+let lastCityVal = '';
+setInterval(function() {
+    if (cityInput.value !== lastCityVal) {
+        lastCityVal = cityInput.value;
+        fillState(cityInput.value, stateInput);
+    }
+}, 200);
+
+const dobDisplay = document.getElementById('dobDisplay');
+const dobHidden  = document.getElementById('dobHidden');
+const dobError   = document.getElementById('dobError');
+
+dobDisplay.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+    if (v.length > 5) v = v.slice(0,5) + '/' + v.slice(5,9);
+    e.target.value = v;
+    dobError.style.display = 'none';
+    dobDisplay.style.borderColor = '';
+});
+
+dobDisplay.addEventListener('blur', validateDOB);
+
+function validateDOB() {
+    const parts = dobDisplay.value.split('/');
+    if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const mon = parseInt(parts[1], 10);
+        const yr  = parseInt(parts[2], 10);
+        if (day>=1 && day<=31 && mon>=1 && mon<=12 && yr>=1900 && yr<=2100) {
+            const iso = `${yr}-${String(mon).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const d   = new Date(iso);
+            if (d.getFullYear()===yr && d.getMonth()+1===mon && d.getDate()===day) {
+                const today = new Date();
+                let age = today.getFullYear() - d.getFullYear();
+                if (today.getMonth() < d.getMonth() ||
+                   (today.getMonth()===d.getMonth() && today.getDate()<d.getDate())) age--;
+                if (age >= 18) {
+                    dobHidden.value = iso;
+                    dobError.style.display = 'none';
+                    dobDisplay.style.borderColor = 'var(--success)';
+                    return true;
+                }
+            }
+        }
+    }
+    dobHidden.value = '';
+    return false;
+}
+document.getElementById('nomineeYes').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('nomineesSection').style.display = 'block';
+        generateNominees(1);
+    }
+});
+document.getElementById('nomineeNo').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('nomineesSection').style.display = 'none';
+        document.getElementById('nomineeFormsContainer').innerHTML = '';
+    }
+});
+
+document.querySelectorAll('.nominee-count-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.nominee-count-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        generateNominees(parseInt(this.dataset.count));
+    });
+});
+
+function generateNominees(count) {
+    const container = document.getElementById('nomineeFormsContainer');
+    container.innerHTML = '';
+    for (let i = 1; i <= count; i++) container.appendChild(buildNomineeCard(i));
+}
+
+function buildNomineeCard(i) {
+    const card = document.createElement('div');
+    card.className = 'nominee-card';
+    card.innerHTML = `
+        <div class="nominee-card-header">
+            <h3 class="nominee-card-title">Nominee ${i}</h3>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nominee Name <span class="required">*</span></label>
+                <input type="text" name="nominee_name_${i}" class="form-control" placeholder="Full name" required>
+            </div>
+            <div class="form-group">
+                <label>Relation <span class="required">*</span></label>
+                <select name="nominee_relation_${i}" class="form-control" required>
+                    <option value="">Select Relation</option>
+                    <option>Father</option><option>Mother</option><option>Spouse</option>
+                    <option>Son</option><option>Daughter</option><option>Brother</option>
+                    <option>Sister</option><option>Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Aadhaar Number <span class="required">*</span></label>
+                <input type="text" name="nominee_aadhaar_${i}" class="form-control" placeholder="12 digit Aadhaar" maxlength="12" required>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="nominee_phone_${i}" class="form-control" placeholder="10 digit phone" maxlength="10">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="nominee_email_${i}" class="form-control" placeholder="nominee@email.com">
+            </div>
+            <div class="form-group">
+                <label>Flat/House No</label>
+                <input type="text" name="nominee_flat_${i}" class="form-control" placeholder="Flat/house number">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="nominee_city_${i}" class="form-control nominee-city"
+                       placeholder="Type city" list="cityList" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>State</label>
+                <input type="text" name="nominee_state_${i}" class="form-control nominee-state"
+                       placeholder="Auto-filled">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Pin Code</label>
+                <input type="text" name="nominee_pincode_${i}" class="form-control" placeholder="6 digit pincode" maxlength="6">
+            </div>
+        </div>`;
+
+    const cf = card.querySelector('.nominee-city');
+    const sf = card.querySelector('.nominee-state');
+
+    ['input', 'change', 'blur'].forEach(evt => {
+        cf.addEventListener(evt, function() { fillState(this.value, sf); });
+    });
+    let lastNomCity = '';
+    setInterval(function() {
+        if (cf.value !== lastNomCity) {
+            lastNomCity = cf.value;
+            fillState(cf.value, sf);
+        }
+    }, 200);
+
+    return card;
+}
+document.getElementById('customerForm').addEventListener('submit', function(e) {
+    if (!validateDOB() || !dobHidden.value) {
+        e.preventDefault();
+        dobError.style.display = 'block';
+        dobDisplay.style.borderColor = 'var(--danger)';
+        dobDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        dobDisplay.focus();
+    }
+});
+</script>
+{% endblock %}
